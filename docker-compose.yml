@@ -1,0 +1,27 @@
+version: '3.8'
+services:
+  web:
+    image: php:8.1-apache
+    volumes:
+      - ./orangehrm-5.6.1:/var/www/html
+    ports:
+      - 80:80
+      - 443:443
+  db:
+    image: mysql:latest
+    volumes:
+      - ./db:/docker-entrypoint-initdb.d
+    environment:
+      - MYSQL_ROOT_PASSWORD=Orange@32123
+      - MYSQL_ALLOW_EMPTY_PASSWORD=1
+      - MYSQL_USER=admin
+      - MYSQL_PASSWORD=P@ssw0rd
+    ports:
+      - 3306:3306
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    ports:
+      - 8080:80
+    environment:
+      - PMA_HOST=db
+      - PMA_PORT=3306  
