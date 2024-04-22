@@ -1,0 +1,77 @@
+&& docker-php-ext-configure intl \
+
+FROM php:8.1-apache
+COPY orangehrm-5.6.1/ /var/www/html/
+RUN docker-php-ext-install mysqli pdo pdo_mysql
+RUN apt-get -y update \
+&& apt-get install -y libicu-dev \
+&& apt-get install libzip-dev \
+&& docker-php-ext-install intl
+&& docker-php-ext-install zlib1g-dev
+RUN docker-php-ext-configure gd
+RUN docker-php-ext-install gd
+RUN docker-php-ext-install ldap
+RUN docker-php-ext-enable  ldap
+
+
+
+
+version: '3.8'
+services:
+  web:
+    image: php:8.1-apache
+    volumes:
+      - ./orangehrm-5.6.1:/var/www/html
+    ports:
+      - 80:80
+      - 443:443
+  db:
+    image: mysql:latest
+    volumes:
+      - ./db:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=P@ssw0rd
+      - MYSQL_ALLOW_EMPTY_PASSWORD=1
+    ports:
+      - 3306:3306
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    ports:
+      - 8080:80
+    environment:
+      - PMA_HOST=db
+      - PMA_PORT=3306  
+	  
+	  
+	  
+	  
+	  
+	  MYSQL_USER=admin
+	  MYSQL_PASSWORD=P@ssw0rd
+	  
+	  
+	  docker build --target web -t isuliman/dockerhub:1.0  .
+	  
+docker tag phpmyadmin/phpmyadmin:latest isuliman/phpmyadmin:1.0
+docker push isuliman/phpmyadmin:1.0
+
+docker rmi isuliman/phpmyadmin:1.0 
+
+docker pull isuliman/phpmyadmin:1.0 
+
+
+git init
+		git add .
+		git add --all ---------> add all file to be tracked 
+		
+git commit -m "this is my first commit" --------> m for messege
+git diff --------> show what was changed on the code 
+git branch temp ---------> create new branch
+git switch temp ---------> switch from main to temp branch 
+git merge -m "merge temp branch to main branch" temp -------> merge banch
+git branch -d temp --------> delete branch
+git switch -c temp ---------> create new branch and switch to it 
+
+git remote add origin https://github.com/isuliman01/orangehrm.git
+git branch -M main
+git push -u origin main
