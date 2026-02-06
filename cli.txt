@@ -17,31 +17,45 @@ RUN docker-php-ext-enable  ldap
 
 
 version: '3.8'
+volume:
+	wp-data:
+netwoks:
+	wp-network:
 services:
-  web:
-    image: php:8.1-apache
-    volumes:
-      - ./orangehrm-5.6.1:/var/www/html
-    ports:
-      - 80:80
-      - 443:443
-  db:
+
+db:
+	container_name: mysql-db
     image: mysql:latest
     volumes:
-      - ./db:/var/lib/mysql
+		- wp-data:/var/lib/mysql
+		- ./db:/var/lib/mysql
     environment:
       - MYSQL_ROOT_PASSWORD=P@ssw0rd
       - MYSQL_ALLOW_EMPTY_PASSWORD=1
     ports:
       - 3306:3306
-  phpmyadmin:
-    image: phpmyadmin/phpmyadmin
+	netwoks:
+		- wp-network:
+web:
+	container_name:web
+    image: php:8.1-apache
+	depends_on:
+	- db
+    volumes:
+      - ./orangehrm-5.6.1:/var/www/html
     ports:
-      - 8080:80
+      - 80:80
+      - 443:443
+phpmyadmin:
+	container_name: phpmyadmin
+    image: phpmyadmin/phpmyadmin
+	depends_on:
+	- db
     environment:
       - PMA_HOST=db
       - PMA_PORT=3306  
-	  
+    ports:
+      - 8080:80	  
 	  
 	  
 	  
